@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Shula Mokshim</string>
+
+    <!--Landing Page-->
+    <string name="easy_button">Easy</string>
+    <string name="medium_button">Medium</string>
+    <string name="hard_button">Hard</string>
+    <string name="choose_difficulty">Choose Difficulty</string>
+    <string name="table_scores">Table Scores</string>
+
+    <!--Landing Page-->
+    <string name="table_fragment">Table</string>
+    <string name="map_fragment">Map</string>
+
+
+    <!--Error Messages-->
+    <string name="over_flag_limit_error">Mine flag limit reached.  Remove at least one mine flag</string>
+    <string name="uncover_tile_error">Must remove mine flag</string>
+    <string name="board_initialization_error">There was a problem setting up the game</string>
+    <string name="finish_button">finish</string>
+    <string name="reset_button">reset</string>
+    <string name="game_reset_error">There was a problem resetting the game</string>
+    <string name="win_message">You won!</string>
+    <string name="loss_message">You lost!</string>
+    <string name="won_text">Harrai!!!!</string>
+    <string name="loss_text">You are a looser! try again</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
