@@ -13,14 +13,11 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,7 +36,6 @@ import com.example.harelavikasis.shulamokshim.MainApp.board.BoardLayoutView;
 import com.example.harelavikasis.shulamokshim.MainApp.bus.GeneralEvent;
 import com.example.harelavikasis.shulamokshim.MainApp.drawable.ConcentricCirclesDrawable;
 import com.example.harelavikasis.shulamokshim.MainApp.exceptions.InitializationException;
-import com.example.harelavikasis.shulamokshim.MainApp.scoresTable.MapFragment;
 import com.example.harelavikasis.shulamokshim.MainApp.scoresTable.Score;
 import com.example.harelavikasis.shulamokshim.MainApp.utils.GyroManager;
 import com.example.harelavikasis.shulamokshim.MainApp.utils.Level;
@@ -51,12 +47,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.greysonparrelli.permiso.Permiso;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.Date;
@@ -119,6 +112,7 @@ public class GameActivity extends AppCompatActivity implements GameManager.Liste
     private Sensor mSensor;
     private boolean isFinishNotAlredyTapped = true;
     private Toast toast;
+    private boolean mIsGameFinished;
 
 
     /**
@@ -247,6 +241,10 @@ public class GameActivity extends AppCompatActivity implements GameManager.Liste
             @Override
             public void onClick(View v) {
                 try {
+                    if (toast != null) {
+                        toast.show();
+                        toast.cancel();
+                    }
 
                     prepareToReset();
 
@@ -272,12 +270,12 @@ public class GameActivity extends AppCompatActivity implements GameManager.Liste
     private void prepareToReset()
     {
         moveImageFinishDown();
+        mIsGameFinished = false;
         gifView.setVisibility(View.GONE);
         isFinishNotAlredyTapped = true;
         mSensorManager.unregisterListener(gyroManager);
         gyroManager = new GyroManager();
         mSensorManager.registerListener(gyroManager, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        toast.cancel();
     }
 
     private void setupStatusImageView() {
@@ -361,6 +359,7 @@ public class GameActivity extends AppCompatActivity implements GameManager.Liste
         // here we need to intent new activity with failed view
 //        checkRecords();
 //        navigateFinishScreen(false);
+        mIsGameFinished = true;
         moveImageFinishUp(false);
         mStatusImageDrawable.setLevel(LOST_LEVEL);
     }
@@ -368,6 +367,7 @@ public class GameActivity extends AppCompatActivity implements GameManager.Liste
     @Override
     public void onWin() {
         // here we need to intent new activity with Win view and also store the scores to shared application
+        mIsGameFinished = true;
         checkRecords();
 //        navigateFinishScreen(true);
         mStatusImageDrawable.setLevel(WON_LEVEL);
@@ -518,9 +518,9 @@ public class GameActivity extends AppCompatActivity implements GameManager.Liste
                     .duration(700)
                     .playOn(gifView);
 
-            YoYo.with(Techniques.FadeOut)
-                    .duration(700)
-                    .playOn(gifView);
+//            YoYo.with(Techniques.FadeOut)
+//                    .duration(700)
+//                    .playOn(gifView);
         }
 
     }
@@ -610,12 +610,14 @@ public class GameActivity extends AppCompatActivity implements GameManager.Liste
     }
     @Subscribe
     public void tiltEvent(GeneralEvent event) throws InitializationException {
-        mGameManager.addRandomMine();
-        toast = Toast.makeText(this, "Tilt Back! Mine was Added To the Screen", Toast.LENGTH_LONG);
-        toast.show();
-        if (mGameManager != null) {
+        if (!mIsGameFinished) {
+            mGameManager.addRandomMine();
+            toast = Toast.makeText(this, "Tilt Back! Mine was Added To the Screen", Toast.LENGTH_LONG);
+            toast.show();
+            if (mGameManager != null) {
 //            updateMineFlagsRemainingCount(mGameManager.getMineFlagsRemainingCount());
 //            startTimer();
+            }
         }
     }
 
